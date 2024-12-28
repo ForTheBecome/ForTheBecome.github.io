@@ -5,6 +5,8 @@
 
 /* 全页面属性 */
 
+
+@import url("https://scp-wiki-cdn.nyc3.cdn.digitaloceanspaces.com/theme/en/basalt/normalize-min.css");
 @import url("https://d3g0gp89917ko0.cloudfront.net/v--4b961b7cc327/common--theme/base/css/style.css");
 
 body {

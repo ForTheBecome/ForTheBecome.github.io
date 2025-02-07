@@ -5,43 +5,63 @@
     <style>
     </style>
     <style>
-        h2#title {
+        :root {
+            --theme-color: #8969ff;
+            --text-color: #000000;
+            --header-color:#fdfbfff3;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --header-color: #2d2d2df0;
+                --text-color: #e5e5e5;
+            }
+        }
+        
+        #title {
             text-align: center;
         }
         
-        div#clock div {
+        #clock div {
             display: inline;
         }
         
-        div#clock {
+        #clock {
             text-align: center;
+            background: var(--header-color);
+            width: max-content;
+            min-width: 10em;
+            margin: 0 auto;
+            padding: .4em 2em;
+            border: solid var(--theme-color);
+            border-width: 0 .2em;
         }
         
         .unit-label {
             display: none;
         }
         
-        span#years:not(:empty)::after {
+        #years:not(:empty)::after {
             content: "年";
         }
         
-        span#months:not(:empty)::after {
+        #months:not(:empty)::after {
             content: "月";
         }
         
-        span#days:not(:empty)::after {
+        #days:not(:empty)::after {
             content: "日";
         }
         
-        span#hours:not(:empty)::after {
+        #hours:not(:empty)::after {
             content: "时";
         }
         
-        span#minutes:not(:empty)::after {
+        #minutes:not(:empty)::after {
             content: "分";
         }
         
-        span#seconds:not(:empty)::after {
+        #seconds:not(:empty)::after {
             content: "秒";
         }
     </style>

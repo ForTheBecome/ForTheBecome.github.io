@@ -251,12 +251,11 @@
             var parameters = new URLSearchParams(url.search);
             var language = "cn";
             var timestamp = parameters.get('timestamp');
-            let time = timestamp;
-            let time = Date.parse(time);
-            if (isNaN(time)) {
+            let datetime = Date.parse(timestamp);
+            if (isNaN(datetime)) {
                 return;
             } else {
-                var timestamp = time;
+                var timestamp = datetime;
             }
             var progressMessage = '倒计时结束后页面将可供删除：';
             var finishedMessage = '页面已可供删除，保留时长：';

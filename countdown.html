@@ -253,7 +253,7 @@
             var timestamp = parameters.get('timestamp');
             let datetime = Date.parse(timestamp);
             if (isNaN(datetime)) {
-                return;
+                continue;
             } else {
                 var timestamp = datetime / 1000;
             }

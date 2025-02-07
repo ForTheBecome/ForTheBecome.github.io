@@ -9,12 +9,14 @@
             --theme-color: #8969ff;
             --text-color: #000000;
             --header-color:#fdfbfff3;
+            --reverse-text-color: #fefefe;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
                 --header-color: #2d2d2df0;
                 --text-color: #e5e5e5;
+                --reverse-text-color: #1f1e1e;
             }
         }
 
@@ -22,6 +24,11 @@
             color: var(--text-color);
             -webkit-text-size-adjust: none;
             -webkit-tap-highlight-color: transparent;
+        }
+
+        ::selection {
+            color: var(--reverse-text-color);
+            background: var(--theme-color);
         }
         
         #title {

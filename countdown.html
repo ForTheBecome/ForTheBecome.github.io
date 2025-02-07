@@ -255,7 +255,7 @@
             if (isNaN(datetime)) {
                 return;
             } else {
-                var timestamp = datetime;
+                var timestamp = datetime / 1000;
             }
             var progressMessage = '倒计时结束后页面将可供删除：';
             var finishedMessage = '页面已可供删除，保留时长：';

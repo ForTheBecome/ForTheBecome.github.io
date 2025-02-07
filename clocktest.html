@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+    </style>
+    <meta name="description" content="SCP Wiki Timer instance">
+    <meta name="keywords" content="scp,wiki,timer">
+    <link rel="stylesheet" href="/timer/timer.css">
+    <style>
+        h2#title {
+            text-align: center;
+        }
+        
+        div#clock div {
+            display: inline;
+        }
+        
+        div#clock {
+            text-align: center;
+        }
+        
+        .unit-label {
+            display: none;
+        }
+        
+        span#years:not(:empty)::after {
+            content: "年";
+        }
+        
+        span#months:not(:empty)::after {
+            content: "月";
+        }
+        
+        span#days:not(:empty)::after {
+            content: "日";
+        }
+        
+        span#hours:not(:empty)::after {
+            content: "时";
+        }
+        
+        span#minutes:not(:empty)::after {
+            content: "分";
+        }
+        
+        span#seconds:not(:empty)::after {
+            content: "秒";
+        }
+    </style>
+    <script>
+      // 改自SCP社区倒计时组件
+        var SECONDS_MS = 1000;
+        var MINUTES_MS = SECONDS_MS * 60;
+        var HOURS_MS = MINUTES_MS * 60;
+        var DAYS_MS = HOURS_MS * 24;
+        
+        var SECONDS_ENUM = 0;
+        var MINUTES_ENUM = 1;
+        var HOURS_ENUM = 2;
+        var DAYS_ENUM = 3;
+        var MONTHS_ENUM = 4;
+        var YEARS_ENUM = 5;
+        
+        function getMessage(language, messageKey) {
+          var translations = {
+            'cn': {
+              'timer-description': '倒计时结束后页面将可供删除：',
+              'timer-progress': '倒计时结束后页面将可供删除：',
+              'timer-finished': '页面已可供删除，保留时长：',
+              'years': '',
+              'months': '',
+              'days': '',
+              'hours': '',
+              'minutes': '',
+              'seconds': '',
+            },
+          };
+          var messages = translations[language];
+        
+          var message = messages[messageKey];
+        
+          return message;
+        }
+        
+        function getDaysInFebruary(startYear) {
+          return (startYear % 4 === 0 && startYear % 100 !== 0)
+            || startYear % 400 === 0 ? 29 : 28;
+        }
+        
+        function elapsedData(targetTime) {
+          var now = new Date();
+          var elapsed = now - targetTime;
+        
+          if (elapsed >= 0) {
+            return {
+              elapsed: elapsed,
+              finished: true,
+              startTime: targetTime,
+              endTime: now,
+            };
+          } else {
+            return {
+              elapsed: -elapsed,
+              finished: false,
+              startTime: now,
+              endTime: targetTime,
+            };
+          }
+        }
+        function dateDiff(startDate, endDate) {
+          var diff = endDate - startDate;
+          diff -= Math.floor(diff % DAYS_MS);
+          endDate = new Date(startDate.getTime() + diff);
+          var february = getDaysInFebruary(startDate.getFullYear());
+          var daysInMonth = [31, february, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+          var yearDiff = endDate.getFullYear() - startDate.getFullYear();
+          var monthDiff = endDate.getMonth() - startDate.getMonth();
+          if (monthDiff < 0) {
+            yearDiff--;
+            monthDiff += 12;
+          }
+        
+          var dayDiff = endDate.getDate() - startDate.getDate();
+          if (dayDiff < 0) {
+            if (monthDiff > 0) {
+              monthDiff--;
+            } else {
+              yearDiff--;
+              monthDiff = 11;
+            }
+        
+            dayDiff += daysInMonth[startDate.getMonth()];
+          }
+        
+          return {
+            years: yearDiff,
+            months: monthDiff,
+            days: dayDiff,
+          };
+        }
+        function timeRemaining(targetTime) {
+          var data = elapsedData(targetTime);
+          var dateDiffs = dateDiff(data.startTime, data.endTime);
+          var years = dateDiffs.years;
+          var months = dateDiffs.months;
+          var days = dateDiffs.days;
+          var elapsed = Math.floor(data.elapsed % DAYS_MS);
+        
+          var hours = Math.floor(elapsed / HOURS_MS);
+          elapsed = Math.floor(elapsed % HOURS_MS);
+        
+          var minutes = Math.floor(elapsed / MINUTES_MS);
+          elapsed = Math.floor(elapsed % MINUTES_MS);
+        
+          var seconds = Math.floor(elapsed / SECONDS_MS);
+          elapsed = Math.floor(elapsed % MINUTES_MS);
+          var highest;
+          if (years > 0) {
+            highest = YEARS_ENUM;
+          } else if (months > 0) {
+            highest = MONTHS_ENUM;
+          } else if (days > 0) {
+            highest = DAYS_ENUM;
+          } else if (hours > 0) {
+            highest = HOURS_ENUM;
+          } else if (minutes > 0) {
+            highest = MINUTES_ENUM;
+          } else {
+            highest = SECONDS_ENUM;
+          }
+        
+          return {
+            years: years,
+            months: months,
+            days: days,
+            hours: hours,
+            minutes: minutes,
+            seconds: seconds,
+            finished: data.finished,
+            highest: highest,
+          };
+        }
+        
+        function setTimerField(language, field, value) {
+          var visible = value !== null;
+        
+          if (visible) {
+            document.getElementById(field).innerText = value;
+          }
+        
+          setTimerFieldVisibility(field, visible);
+        }
+        
+        function setTimerFieldVisibility(field, visible) {
+          var element = document.getElementById(field + '-div');
+        
+          if (visible) {
+            element.classList.remove('hidden');
+          } else {
+            element.classList.add('hidden');
+          }
+        }
+        
+        function createTimer(language, targetTime, progressMessage, finishedMessage) {
+          progressMessage = progressMessage || getMessage(language, 'timer-progress');
+          finishedMessage = finishedMessage || getMessage(language, 'timer-finished');
+          var timerFields = [
+            ['years', YEARS_ENUM, 1],
+            ['months', MONTHS_ENUM, 1],
+            ['days', DAYS_ENUM, 1],
+            ['hours', HOURS_ENUM, 2],
+            ['minutes', MINUTES_ENUM, 2],
+            ['seconds', SECONDS_ENUM, 2],
+          ];
+          
+          for (var i = 0; i < timerFields.length; i++) {
+            var field = timerFields[i][0];
+            document.getElementById(field + '-label').innerText = getMessage(language, field);
+          }
+        
+          function updateTimer() {
+            var remaining = timeRemaining(targetTime);
+            var titleElement = document.getElementById('title');
+        
+            if (remaining.finished) {
+              titleElement.innerText = finishedMessage;
+              titleElement.classList = ['finished'];
+            } else {
+              titleElement.innerText = progressMessage;
+              titleElement.classList = ['progress'];
+            }
+            for (var i = 0; i < timerFields.length; i++) {
+              var field = timerFields[i][0];
+              var fieldEnum = timerFields[i][1];
+              var padWidth = timerFields[i][2];
+              var value = remaining.highest >= fieldEnum
+                ? String(remaining[field]).padStart(padWidth, '0')
+                : null;
+        
+              setTimerField(language, field, value);
+            }
+          }
+          document.title = getMessage(language, 'timer-description') + ' ' + targetTime;
+          updateTimer();
+          setInterval(updateTimer, 1000);
+        }
+        
+        function setup() {
+          var url = new URL(window.location.href);
+          var parameters = new URLSearchParams(url.search);
+          var language = "cn";
+          var timestamp = parameters.get('timestamp');
+          var progressMessage = '倒计时结束后页面将可供删除：';
+          var finishedMessage = '页面已可供删除，保留时长：';
+          var targetTime;
+          if (/^\d+(\.\d+)?$/.exec(timestamp)) {
+            targetTime = new Date(parseFloat(timestamp) * 1000);
+          } else {
+            targetTime = new Date(timestamp);
+          }
+          createTimer(language, targetTime, progressMessage, finishedMessage);
+        }
+        
+        setTimeout(setup, 5);
+    </script>
+</head>
+<body>
+    <noscript>This application requires Javascript to function.</noscript>
+    <div id="timer">
+        <h2 id="title"></h2>
+        <div id="clock">
+            <div id="years-div" class="unit">
+                <span id="years" class="unit-value"></span>
+                <span id="years-label" class="unit-label"></span>
+            </div>
+            <div id="months-div" class="unit">
+                <span id="months" class="unit-value"></span>
+                <span id="months-label" class="unit-label"></span>
+            </div>
+            <div id="days-div" class="unit">
+                <span id="days" class="unit-value"></span>
+                <span id="days-label" class="unit-label"></span>
+            </div>
+            <div id="hours-div" class="unit">
+                <span id="hours" class="unit-value"></span>
+                <span id="hours-label" class="unit-label"></span>
+            </div>
+            <div id="minutes-div" class="unit">
+                <span id="minutes" class="unit-value"></span>
+                <span id="minutes-label" class="unit-label"></span>
+            </div>
+            <div id="seconds-div" class="unit">
+                <span id="seconds" class="unit-value"></span>
+                <span id="seconds-label" class="unit-label"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

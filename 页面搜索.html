@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<body>
+    <style>
+        :root {
+            --header-color: #fdfbfff3;
+            --theme-color: #8969ff;
+            --shadow-color: #d4dbd5;
+            --ui-border-color: #c9c9c9;
+            --text-color: #000000;
+            --special-text-color: #fefefe;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --header-color: #2d2d2df0;
+                --shadow-color: #131313;
+                --ui-border-color: #7b7171;
+                --text-color: #e5e5e5;
+            }
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="password"],
+        textarea {
+            padding: 5px;
+            border: 1px solid var(--ui-border-color);
+            width: 100%;
+            background: var(--header-color);
+            border-radius: 2px;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            color: var(--text-color);
+            -webkit-appearance: none;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        textarea,
+        input {
+            outline: none;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="url"],
+        input[type="password"],
+        input.text,
+        textarea {
+            border: none;
+            box-shadow: inset 0px -1px 0px 0px var(--shadow-color);
+            -webkit-box-shadow: inset 0px -1px 0px 0px var(--shadow-color);
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="url"]:focus,
+        input[type="password"]:focus,
+        input.text:focus,
+        textarea:focus {
+            box-shadow: inset 0px -2px 0px 0px var(--theme-color);
+            -webkit-box-shadow: inset 0px -2px 0px 0px var(--theme-color);
+        }
+
+        input[type="submit"],
+        input[type="button"],
+        button {
+            border: 0.5px solid var(--ui-border-color);
+            background: var(--header-color);
+            color: var(--text-color);
+            width: 80px;
+            padding: 2.5px 0;
+            margin: 0 5px;
+            font-size: 90%;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        input[type="submit"]:hover,
+        input[type="button"]:hover,
+        button:hover {
+            border-color: var(--theme-color);
+            background: var(--theme-color);
+            color: var(--special-text-color);
+        }
+
+        input[type="submit"]:active,
+        input[type="button"]:active,
+        button:active {
+            border-color: var(--theme-color);
+            background: var(--theme-color);
+            color: var(--special-text-color);
+        }
+        hr {
+            background-color: var(--theme-color);
+            margin: 1em .2em;
+            padding: 0;
+            height: 1px;
+            border: none;
+        }
+    </style>
+    <div style="text-align:center">
+        <span style="font-size: 1.3em;">全站搜索</span>
+        <form action="https://search.ipv6s.net/search" id="searchForm">
+            <input placeholder="站内搜索" type="text" name="q" style="width:200px;" value="" required>
+            <input type="hidden" name="site" value="bloxd.wikidot.com">
+            <input type="submit" value="搜索" class="fsoubutton">
+        </form>
+        <hr>
+        <span style="font-size: 1.3em;">维基搜索</span>
+        <br />
+        <input placeholder="站内维基搜索" type="text" id="q" style="width:200px;" value="">
+        <button type="submit" onclick="search()">搜索</button>
+    </div>
+    <script>
+        var searchForm = document.getElementById('searchForm');
+        searchForm.onsubmit = function(){
+        var url = this.action;
+        var q = this.children['q'].value;
+        var site = this.children['site'].value;
+        var url = url + '?q=!yh !go '+q+' site:'+ site + "&categories=general&language=zh-CN";
+        window.open(url);
+        return false;
+        };
+    </script>
+  <script src="https://bloxd.wdfiles.com/local--files/home%3Ahome/Bloxd_Chinese_simplified.json"></script>
+  <script src="https://bloxd.wdfiles.com/local--files/home%3Ahome/Bloxd_En.json"></script>
+  <script>
+
+    function findKey(obj, value, compare = (a, b) => a === b) {
+      return Object.keys(obj).find(k => compare(obj[k], value));
+    };
+
+    function search(){
+      var q = document.getElementById('q').value;
+      var str=findKey(arr, q);
+      if (typeof str === "undefined") {
+          var str=findKey(enr, q);
+      };
+      if (typeof str === "undefined") {
+          var m = q.split(" ");
+          for (let i = 0; i < m.length; i++) {
+              m[i] = m[i][0].toUpperCase() + m[i].substr(1);
+          };
+          m = m.join(' ');
+          var str=findKey(enr, m);
+      };
+      str = str.replace(/yellow|white|red|purple|pink|orange|magenta|lime|lightGray|lightBlue|green|gray|cyan|brown|blue|black|Description/g, '');
+      str = str.replace(/extraC|superC|hyperC|ultraC|megaC/g, 'C');
+      str = str.replace(/StickP/g, 'StickyP');
+      str = str.replace(/([a-z])([A-Z])/g, '$1 $2');
+      window.open("https://bloxd.wikidot.com/wiki:" + str);
+      return false;
+    };
+  </script>
+</body>
+</html>
